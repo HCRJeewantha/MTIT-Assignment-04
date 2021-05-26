@@ -39,6 +39,11 @@ public class PaymentServiceImpl {
         return "Cart Item Deleted, Cart Id: " + id;
     }
 
+    public String deleteCartAll(){
+        restTemplate.delete("http://localhost:8181/api/cart/deleteCartAll");
+        return "Cart Item Deleted";
+    }
+
     public ResponseEntity<OrderRequest> getOrder(Integer id){
         Map<String, Integer> params = new HashMap<>();
         params.put("id", id);
