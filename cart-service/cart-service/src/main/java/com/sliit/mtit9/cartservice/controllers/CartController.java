@@ -68,6 +68,7 @@ public class CartController {
             cartResponse.setDescription(cartService.getProduct(cart.getProductId()).getBody().getDescription());
             cartResponse.setPrice(cartService.getProduct(cart.getProductId()).getBody().getPrice());
             cartResponse.setProductId(cartService.getProduct(cart.getProductId()).getBody().getId());
+
             userCart.add(cartResponse);
         }
         return userCart;
@@ -107,6 +108,13 @@ public class CartController {
     String deleteCart(@PathVariable Integer id){
         cartRepository.deleteById(id);
         return id + " Product Deleted Successfully";
+    }
+
+    @DeleteMapping(value = "/deleteCartAll")
+    public @ResponseBody
+    String deleteCartAll(){
+        cartRepository.deleteAll();
+        return " Cart Deleted Successfully";
     }
 
     @GetMapping(value = "/getCartItemById/{id}")
