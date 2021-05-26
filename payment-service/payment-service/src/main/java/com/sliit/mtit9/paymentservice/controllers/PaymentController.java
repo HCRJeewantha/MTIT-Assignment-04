@@ -69,7 +69,7 @@ public class PaymentController {
 
     @PostMapping(value = "/addOrderPayment")
     public @ResponseBody
-    String addOrderPayment(@RequestBody Payment payment){
+    Object addOrderPayment(@RequestBody Payment payment){
 
 
         List<Payment> payments = jdbcTemplate.query("SELECT * FROM payment WHERE order_id="+payment.getOrderId(), (resultSet, rowNum) -> new Payment(
@@ -88,10 +88,11 @@ public class PaymentController {
             Payment payment1 = new Payment();
 
             payment1.setPaymentMethod(payment.getPaymentMethod());
-            payment1.setUserId(payment.getUserId());
-            payment1.setTotal(payment.getTotal());
-            payment1.setPaymentStatus(payment.getPaymentStatus());
+            payment1.setUserId(order.getBody().getUserId());
+            payment1.setTotal(order.getBody().getTotalPrice());
+            payment1.setPaymentStatus("Paid");
             payment1.setCartId(0);
+            payment1.setProductId(0);
             payment1.setOrderId(payment.getOrderId());
 
             paymentRepository.save(payment1);
@@ -105,11 +106,12 @@ public class PaymentController {
             orderResponse.setUserId(order.getBody().getUserId());
 
             paymentService.updateOrderStatus(orderResponse);
+            paymentService.deleteCartAll();
 
-            return "Payment added successfully. User Id: " + payment.getUserId() + "Order Id: " + payment.getOrderId();
+            return "Payment added successfully. User Id: " + order.getBody().getUserId() + "Order Id: " + payment.getOrderId() + ". Your Cart is empty now";
 
         }else{
-            return "You already paid";
+            return "You Already Paid";
         }
 
     }
@@ -142,9 +144,6 @@ public class PaymentController {
             paymentResponse.setId(payment.getId());
             paymentResponse.setUserId(payment.getUserId());
             paymentResponse.setTotal(payment.getTotal());
-            paymentResponse.setCartId(payment.getCartId());
-            paymentResponse.setProductId(paymentService.getProduct(payment.getProductId()).getBody().getId());
-            paymentResponse.setProductName(paymentService.getProduct(payment.getProductId()).getBody().getProductName());
 
             userPayment.add(paymentResponse);
         }
